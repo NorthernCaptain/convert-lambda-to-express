@@ -1,7 +1,7 @@
 import { APIGatewayProxyWithCognitoAuthorizerHandler } from 'aws-lambda';
 import { Logger } from 'winston';
 import { Handler } from 'express';
-import { fromEnv } from '@aws-sdk/credential-providers';
+import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { AwsCredentialIdentity } from '@aws-sdk/types';
 import { readFileSync } from 'fs';
 import { Context, ContextOptions } from './Context';
@@ -68,6 +68,7 @@ export async function getCredentials(
   filename?: string,
   profile?: string
 ): Promise<AwsCredentialIdentity | undefined> {
+  // First try custom credentials file if specified
   if (filename) {
     const credentials = parseCredentialsFile(filename, profile);
     if (credentials) {
@@ -75,16 +76,15 @@ export async function getCredentials(
     }
   }
 
-  if (process.env.AWS_ACCESS_KEY_ID?.length && process.env.AWS_SECRET_ACCESS_KEY?.length) {
-    try {
-      const credentialProvider = fromEnv();
-      return await credentialProvider();
-    } catch {
-      // If fromEnv fails, return undefined
-    }
+  // Fall back to AWS SDK Node.js credential provider chain
+  // This checks in order: env vars, shared credentials, ECS/EKS, EC2 instance metadata
+  try {
+    const credentialProvider = fromNodeProviderChain({ profile });
+    return await credentialProvider();
+  } catch {
+    // If all credential sources fail, return undefined
+    return undefined;
   }
-
-  return undefined;
 }
 
 export function wrapLambda(
