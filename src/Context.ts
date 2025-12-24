@@ -1,6 +1,6 @@
 import os from 'os';
 import { resolve } from 'path';
-import { SharedIniFileCredentials } from 'aws-sdk';
+import { AwsCredentialIdentity } from '@aws-sdk/types';
 import { Context as IContext, CognitoIdentity, ClientContext } from 'aws-lambda';
 import { generateRandomHex, TimeoutError } from './utils';
 
@@ -13,7 +13,7 @@ type Reject = (err: Error) => void;
  */
 export interface ContextOptions {
   startTime: number;
-  credentials?: SharedIniFileCredentials;
+  credentials?: AwsCredentialIdentity;
   functionName?: string;
   functionVersion?: string;
   memorySize?: number;
@@ -163,9 +163,9 @@ export class Context implements IContext {
      *  AWS_LAMBDA_LOG_STREAM_NAME: '2021/11/22/[$LATEST]de828bd7f9c24c7eb7785595c8986d57',
      *  AWS_REGION: 'us-east-1',
      *  AWS_DEFAULT_REGION: 'us-east-1',
-     *  AWS_ACCESS_KEY_ID: 'ASIAZCOEDDHJLKBSTXHC',
-     *  AWS_SECRET_ACCESS_KEY: 'p9J3AUnM6Xq/FWC1gbjZYQNPQ5dcrssKFE5O5KuX',
-     *  AWS_SESSION_TOKEN: 'IQoJb3JpZ2luX2VjEG0aCXVzLWVhc3QtMSJHMEUCIQDE+QJWdu2ObTnT9tX2LwciiBgtztLCIatoB3SAuf+pXQIgODR1wCU8X0IWyZGWQNcs6gT/fscXr994bg9/PXfW8/8qjAIINhAAGgw2MjM3MTgzNzM4NDIiDDPpPESUXC4fMbct4CrpAc5qgMybO6icB79pLiOw5wysZJJIYRXiB0Je8OAQXrHwNaV8hxyZ8bnLVeSA0K4LSea4htMaKUpL5f88lqmFrIJMYRnKD4V3xVmLX65oFh7wl8WkF2gJ91Hl8x8keEriRdRyD69h1nhcCzM2UsQvZykDw7BTjwBYu74E4JUaTgtdZscG1/W2B9I4ooPWzOwjuCdcY6NFsUC/LBAZojS5UqQkI3Uhj1y4Fj/KtpaGBjR07EaeuRJKEDj7Urw2v4CpmyJIQObu0qqU7nWFAbSiAXyfgEWwJ4F/8sJeDD5rVE9S7aqOj4HSK/nQMJWI8IwGOpoBYbUVUr5d+H4aC4/fJR8oTotYqXqCzwit+KvnShgTLTeOnzxKVIs/h/mAXETBKoSLTSBC5Fhap9+8GJ2Oh+MLRiJ2N2I/JlbT05R9M5J3iL/OlRzxMNj8BLheEit6E23LvmIv+O3AtvDu0N+DDG2++KxlPpmfrC9DiE//i57xfLd/g+arsBnCHw1fK1Jw+6FXovJXVzLloB/DPA==',
+     *  AWS_ACCESS_KEY_ID: 'EXAMPLE_ACCESS_KEY_ID',
+     *  AWS_SECRET_ACCESS_KEY: 'EXAMPLE_SECRET_ACCESS_KEY',
+     *  AWS_SESSION_TOKEN: 'EXAMPLE_SESSION_TOKEN',
      *  AWS_EXECUTION_ENV: 'AWS_Lambda_nodejs14.x',
      *  AWS_LAMBDA_RUNTIME_API: '127.0.0.1:9001',
      *  _HANDLER: 'index.handler',
