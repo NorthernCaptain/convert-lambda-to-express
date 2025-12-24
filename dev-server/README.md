@@ -28,6 +28,11 @@ See the [main package documentation](https://github.com/matthewkeil/convert-lamb
 
 This package depends on `convert-lambda-to-express` for core Lambda-to-Express conversion functionality.
 
+The dev server uses the `Logger` interface from the core package, which is compatible with:
+- **console** (default)
+- **winston** (install separately if desired: `npm install winston`)
+- Any custom logger with `info()` and `error()` methods
+
 ## License
 
 MIT
