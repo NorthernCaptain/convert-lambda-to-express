@@ -1,8 +1,8 @@
 import { inspect } from 'util';
 import { APIGatewayProxyWithCognitoAuthorizerHandler } from 'aws-lambda';
+import { Logger } from './logger';
 import { Event } from './Event';
 import { Context } from './Context';
-import { Logger } from 'winston';
 
 /**
  * @description handler function can return results via three methods. need to

@@ -1,9 +1,9 @@
 import { APIGatewayProxyWithCognitoAuthorizerHandler } from 'aws-lambda';
-import { Logger } from 'winston';
 import { Handler } from 'express';
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
 import { AwsCredentialIdentity } from '@aws-sdk/types';
 import { readFileSync } from 'fs';
+import { Logger } from './logger';
 import { Context, ContextOptions } from './Context';
 import { Event, EventOptions } from './Event';
 import { convertResponseFactory, ConvertResponseOptions } from './convertResponse';
