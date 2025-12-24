@@ -8,8 +8,7 @@ import morgan from 'morgan';
 import helmet from 'helmet';
 import cors, { CorsOptions } from 'cors';
 import express, { Handler } from 'express';
-import { HttpMethod } from './utils';
-import { wrapLambda, WrapperOptions } from './wrapLambda';
+import { HttpMethod, wrapLambda, WrapperOptions } from 'convert-lambda-to-express';
 
 type MorganOption = 'combined' | 'common' | 'dev' | 'short' | 'tiny';
 

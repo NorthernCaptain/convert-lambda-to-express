@@ -1,11 +1,4 @@
 export { EventOptions } from './Event';
 export { ContextOptions } from './Context';
 export { WrapperOptions, wrapLambda } from './wrapLambda';
-export {
-  addToDevServer,
-  getDevServer,
-  startDevServer,
-  HandlerConfig,
-  DevServerConfig,
-  handlerDefinitions
-} from './devServer';
+export { HttpMethod, httpMethods, isHttpMethod } from './utils';
