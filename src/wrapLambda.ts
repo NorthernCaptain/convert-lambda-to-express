@@ -10,7 +10,8 @@ import { convertResponseFactory, ConvertResponseOptions } from './convertRespons
 import { runHandler } from './runHandler';
 
 export interface WrapperOptions
-  extends Omit<ContextOptions, 'startTime' | 'credentials'>,
+  extends
+    Omit<ContextOptions, 'startTime' | 'credentials'>,
     Pick<EventOptions, 'isBase64EncodedReq' | 'resourcePath' | 'stage' | 'stageVariables'>,
     ConvertResponseOptions {
   credentialsFilename?: string;
@@ -64,10 +65,7 @@ function parseCredentialsFile(filename: string, profile = 'default'): AwsCredent
   return undefined;
 }
 
-export async function getCredentials(
-  filename?: string,
-  profile?: string
-): Promise<AwsCredentialIdentity | undefined> {
+export async function getCredentials(filename?: string, profile?: string): Promise<AwsCredentialIdentity | undefined> {
   // First try custom credentials file if specified
   if (filename) {
     const credentials = parseCredentialsFile(filename, profile);
@@ -95,10 +93,7 @@ export function wrapLambda(
 
   return async (req, res, next) => {
     try {
-      const credentials = await getCredentials(
-        options.credentialsFilename ?? '~/.aws/credentials',
-        options.profile
-      );
+      const credentials = await getCredentials(options.credentialsFilename ?? '~/.aws/credentials', options.profile);
       const startTime = Date.now();
       const context = new Context({
         ...options,

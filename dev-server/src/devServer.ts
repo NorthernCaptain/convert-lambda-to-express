@@ -136,7 +136,7 @@ function buildDevServer({
   environment: serverEnvironment = {}
 }: DevServerConfig = {}) {
   const devServer = express();
-  devServer.use(morgan(morganSetting ?? prod ? 'combined' : 'dev'));
+  devServer.use(morgan((morganSetting ?? prod) ? 'combined' : 'dev'));
   devServer.use(
     cors(
       corsOptions ?? {
