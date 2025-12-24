@@ -36,7 +36,7 @@ For local development with hot-reload, logging, CORS, and security headers:
 npm install --save-dev convert-lambda-to-express-dev
 ```
 
-**Note:** Install as a dev dependency since it includes development-only tools (chokidar, morgan, helmet, cors, winston).
+**Note:** Install as a dev dependency since it includes development-only tools (chokidar, morgan, helmet, cors).
 
 ## AWS Credentials
 
@@ -244,9 +244,10 @@ This project consists of two packages:
 
 ### `convert-lambda-to-express-dev` (Dev Server)
 - **Purpose:** Local development with hot-reload
-- **Dependencies:** Express middleware (morgan, helmet, cors), chokidar, winston
+- **Dependencies:** Express middleware (morgan, helmet, cors), chokidar
 - **Use case:** Local development, testing
 - **Exports:** `addToDevServer`, `getDevServer`, `startDevServer`, `HandlerConfig`, `DevServerConfig`
+- **Note:** Uses the `Logger` interface from core package - compatible with console (default), winston, or custom loggers
 
 ## License
 
