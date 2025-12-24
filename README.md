@@ -174,8 +174,14 @@ export interface WrapperOptions {
   region?: string;
   profile?: string;
   credentialsFilename?: string;
-  logger?: Logger; // winston logger
+  logger?: Logger; // Logger interface (compatible with winston, console, or custom logger)
   defaultResponseHeaders?: { [header: string]: string | number | boolean };
+}
+
+// Logger interface (also exported from the package)
+export interface Logger {
+  info(message: unknown): void;
+  error(message: unknown): void;
 }
 ```
 
@@ -223,7 +229,7 @@ export interface DevServerConfig {
 | `region`|optional, AWS region, default to `us-east-1`. adds AWS_REGION to ENVIRONMENT|
 | `profile`|optional, defaults to `default`. profile from `~/.aws/credential` to use. Adds tokens to AWS_TOKEN, AWS_SECRET_TOKEN, AWS_SESSION_TOKEN|
 | `credentialsFilename`|optional, defaults to `~/.aws/credential`|
-| `logger`|optional, winston Logger object. will default to the console object if not present|
+| `logger`|optional, Logger object with `info()` and `error()` methods. Compatible with winston, console (default), or any custom logger|
 | `defaultResponseHeaders`|optional, headers that should be applied to all responses|
 
 ## Package Structure
@@ -234,7 +240,7 @@ This project consists of two packages:
 - **Purpose:** Production-ready Lambda-to-Express conversion
 - **Dependencies:** Minimal (AWS SDK v3 + Express types only)
 - **Use case:** Production deployments, custom Express servers
-- **Exports:** `wrapLambda`, `WrapperOptions`, `EventOptions`, `ContextOptions`, `HttpMethod`
+- **Exports:** `wrapLambda`, `WrapperOptions`, `EventOptions`, `ContextOptions`, `HttpMethod`, `Logger`
 
 ### `convert-lambda-to-express-dev` (Dev Server)
 - **Purpose:** Local development with hot-reload
