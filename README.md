@@ -42,11 +42,37 @@ npm install --save-dev convert-lambda-to-express-dev
 
 The package automatically detects AWS credentials from multiple sources (in order):
 
-1. Custom credentials file (if `credentialsFilename` option specified)
+1. Custom credentials file (if `credentialsFilename` option specified) with the specified profile
 2. Environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`)
-3. Shared credentials file (`~/.aws/credentials`)
+3. Shared credentials file (`~/.aws/credentials`) with the specified profile
 4. ECS/EKS container credentials
 5. EC2 instance metadata service (IAM instance profile)
+
+**Default behavior:** If you don't specify credentials options, the package uses the **`default` profile** from `~/.aws/credentials`.
+
+```typescript
+// Uses 'default' profile from ~/.aws/credentials
+app.get('/', wrapLambda(handler));
+```
+
+**Custom profile:**
+
+```typescript
+// Uses 'my-profile' from ~/.aws/credentials
+app.get('/', wrapLambda(handler, {
+  profile: 'my-profile'
+}));
+```
+
+**Custom credentials file:**
+
+```typescript
+// Uses custom credentials file with specific profile
+app.get('/', wrapLambda(handler, {
+  credentialsFilename: '/path/to/credentials',
+  profile: 'my-profile'
+}));
+```
 
 This means your code **works seamlessly on EC2 instances with IAM roles** without any configuration!
 
