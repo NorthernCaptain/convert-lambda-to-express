@@ -1,6 +1,6 @@
 import { IncomingHttpHeaders } from 'http';
 import { Response } from 'express';
-import { Logger } from 'winston';
+import { Logger } from './logger';
 
 type DefaultHeaders = {
   [key in keyof IncomingHttpHeaders]: Parameters<Response['header']>[1];

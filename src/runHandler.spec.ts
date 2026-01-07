@@ -208,7 +208,7 @@ describe('runHandler()', () => {
 
   it('should handler throwing of an object that is not an Error', done => {
     const handler: APIGatewayProxyWithCognitoAuthorizerHandler = () => {
-      // eslint-disable-next-line @typescript-eslint/no-throw-literal
+      // eslint-disable-next-line @typescript-eslint/only-throw-error
       throw 'this is not an error!!';
     };
 

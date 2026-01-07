@@ -2,7 +2,9 @@
 
 Production-ready package to run your lambda workloads as an express server. Built with both developers and enterprise in mind.
 
-`convert-lambda-to-express` provides fully features `event` and `context` objects to your handlers and there should be no need to modify your existing code. If you rely on the `ENVIRONMENT` variables that lambda provides, those are accounted for as well.
+`convert-lambda-to-express` provides fully featured `event` and `context` objects to your handlers and there should be no need to modify your existing code. If you rely on the `ENVIRONMENT` variables that lambda provides, those are accounted for as well.
+
+**Now with AWS SDK v3** - Minimal dependencies and support for EC2 instance IAM roles, ECS task roles, and all standard AWS credential sources.
 
 Running apiGateway/lambda locally during development can be a challenge (to say the least). The other options out there are either too slow or too complicated. This package aims to solve this problem by providing a simple way to run your api locally. It allows you to wrap your handlers and serve them from an express server.
 
@@ -16,9 +18,63 @@ If you love this package and want to [thank me](https://www.paypal.com/donate?ho
 
 ## Install
 
+### Core Package (Production)
+
+For production use or to wrap Lambda handlers in your own Express server:
+
 ```bash
-npm install -S convert-lambda-to-express
+npm install convert-lambda-to-express
 ```
+
+**Minimal dependencies:** Only AWS SDK v3 credential providers and Express types.
+
+### Dev Server Package (Development)
+
+For local development with hot-reload, logging, CORS, and security headers:
+
+```bash
+npm install --save-dev convert-lambda-to-express-dev
+```
+
+**Note:** Install as a dev dependency since it includes development-only tools (chokidar, morgan, helmet, cors).
+
+## AWS Credentials
+
+The package automatically detects AWS credentials from multiple sources (in order):
+
+1. Custom credentials file (if `credentialsFilename` option specified) with the specified profile
+2. Environment variables (`AWS_ACCESS_KEY_ID`, `AWS_SECRET_ACCESS_KEY`, `AWS_SESSION_TOKEN`)
+3. Shared credentials file (`~/.aws/credentials`) with the specified profile
+4. ECS/EKS container credentials
+5. EC2 instance metadata service (IAM instance profile)
+
+**Default behavior:** If you don't specify credentials options, the package uses the **`default` profile** from `~/.aws/credentials`.
+
+```typescript
+// Uses 'default' profile from ~/.aws/credentials
+app.get('/', wrapLambda(handler));
+```
+
+**Custom profile:**
+
+```typescript
+// Uses 'my-profile' from ~/.aws/credentials
+app.get('/', wrapLambda(handler, {
+  profile: 'my-profile'
+}));
+```
+
+**Custom credentials file:**
+
+```typescript
+// Uses custom credentials file with specific profile
+app.get('/', wrapLambda(handler, {
+  credentialsFilename: '/path/to/credentials',
+  profile: 'my-profile'
+}));
+```
+
+This means your code **works seamlessly on EC2 instances with IAM roles** without any configuration!
 
 ## Basic usage
 
@@ -66,10 +122,16 @@ app.listen(3000, () => {
 
 ## Hot-Reloading DevServer (useful with cdk)
 
-You can import the `addToDevServer` into your cdk constructs and add the handlers during run time.  This was the designed use case.  See [`matthewkeil/full-stack-pattern`](https://github.com/matthewkeil/full-stack-pattern) for an example. Also works well with sam templates or any other method for programmatically building the handlers array in the example below.  In the cdk instance, instead of calling app.synth() call startDevServer() and it will give you a hot reloading api.   
+**Note:** This feature requires the separate `convert-lambda-to-express-dev` package:
+
+```bash
+npm install --save-dev convert-lambda-to-express-dev
+```
+
+You can import the `addToDevServer` into your cdk constructs and add the handlers during run time. This was the designed use case. See [`matthewkeil/full-stack-pattern`](https://github.com/matthewkeil/full-stack-pattern) for an example. Also works well with sam templates or any other method for programmatically building the handlers array in the example below. In the cdk instance, instead of calling app.synth() call startDevServer() and it will give you a hot reloading api.
 
 ```typescript
-import { addToDevServer, startDevServer, HandlerConfig } from 'convert-lambda-to-express';
+import { addToDevServer, startDevServer, HandlerConfig } from 'convert-lambda-to-express-dev';
 import { middlewareHandler } from './someCorporateMiddleware';
 
 // HandlerConfig extends WrapperOptions
@@ -116,6 +178,8 @@ startDevServer({
 
 Configure your lambdas and devServer with these `options` objects:
 
+### WrapperOptions (from `convert-lambda-to-express`)
+
 ```typescript
 export interface WrapperOptions {
   handler?: string;
@@ -136,10 +200,20 @@ export interface WrapperOptions {
   region?: string;
   profile?: string;
   credentialsFilename?: string;
-  logger?: Logger; // winston logger
+  logger?: Logger; // Logger interface (compatible with winston, console, or custom logger)
   defaultResponseHeaders?: { [header: string]: string | number | boolean };
 }
 
+// Logger interface (also exported from the package)
+export interface Logger {
+  info(message: unknown): void;
+  error(message: unknown): void;
+}
+```
+
+### HandlerConfig and DevServerConfig (from `convert-lambda-to-express-dev`)
+
+```typescript
 export interface HandlerConfig extends WrapperOptions {
   method: HttpMethod;
   resourcePath: string;
@@ -181,9 +255,25 @@ export interface DevServerConfig {
 | `region`|optional, AWS region, default to `us-east-1`. adds AWS_REGION to ENVIRONMENT|
 | `profile`|optional, defaults to `default`. profile from `~/.aws/credential` to use. Adds tokens to AWS_TOKEN, AWS_SECRET_TOKEN, AWS_SESSION_TOKEN|
 | `credentialsFilename`|optional, defaults to `~/.aws/credential`|
-| `logger`|optional, winston Logger object. will default to the console object if not present|
+| `logger`|optional, Logger object with `info()` and `error()` methods. Compatible with winston, console (default), or any custom logger|
 | `defaultResponseHeaders`|optional, headers that should be applied to all responses|
 
+## Package Structure
+
+This project consists of two packages:
+
+### `convert-lambda-to-express` (Core)
+- **Purpose:** Production-ready Lambda-to-Express conversion
+- **Dependencies:** Minimal (AWS SDK v3 + Express types only)
+- **Use case:** Production deployments, custom Express servers
+- **Exports:** `wrapLambda`, `WrapperOptions`, `EventOptions`, `ContextOptions`, `HttpMethod`, `Logger`
+
+### `convert-lambda-to-express-dev` (Dev Server)
+- **Purpose:** Local development with hot-reload
+- **Dependencies:** Express middleware (morgan, helmet, cors), chokidar
+- **Use case:** Local development, testing
+- **Exports:** `addToDevServer`, `getDevServer`, `startDevServer`, `HandlerConfig`, `DevServerConfig`
+- **Note:** Uses the `Logger` interface from core package - compatible with console (default), winston, or custom loggers
 
 ## License
 
